@@ -31,6 +31,8 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 /**
  * Echoes back any received data from a client.
  */
+
+//编解码，IO模型，线程模型
 public final class EchoServer {
 
     static final boolean SSL = System.getProperty("ssl") != null;
@@ -52,6 +54,8 @@ public final class EchoServer {
             sslCtx = null;
         }
 
+        //一个EventLoop就是一个线程，维护了一个selector，channel可以往上注册感兴趣的事件
+
         // Configure the server.
         // 为什么bossGroup只会用到一个线程：因为一般只bind一个端口
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
@@ -62,6 +66,8 @@ public final class EchoServer {
             ServerBootstrap b = new ServerBootstrap();
             // [neo] 设置bossGroup的作用
             b.group(bossGroup, workerGroup)
+             // AbstractBootstrap.channel
+             //只是设置了channel的class，后面连接来的时候，会根据这个class创建channel
              .channel(NioServerSocketChannel.class)
              .option(ChannelOption.SO_BACKLOG, 100)
 

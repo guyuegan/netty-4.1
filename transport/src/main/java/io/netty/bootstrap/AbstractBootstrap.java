@@ -317,7 +317,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     final ChannelFuture initAndRegister() {
         Channel channel = null;
         try {
-            // [neo] 创建channel -> io.netty.channel.socket.nio.NioServerSocketChannel.newSocket
+            // [neo] 创建channel -> io.netty.channel.socket.nio.NioSocketChannel.newSocket
             channel = channelFactory.newChannel();
             // [neo] 初始化channel
             init(channel);

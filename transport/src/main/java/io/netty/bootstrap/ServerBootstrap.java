@@ -167,6 +167,13 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
                     pipeline.addLast(handler);
                 }
 
+                //它本身也是一个handler(Inbound类型) 它的作用仅仅是辅助其他的handler加入到pipeline中
+                //ChannelInitializer的initChannel方法触发时机是在Channel注册到NioEventLoop复用器之后(NioEventLoop启动执行注册操作) 那么到时候会发生回调
+                //添加一个ServerBootstrap指定的bossHandler(也可能没指定) 比如指定了workerHandler 那么回调执行后 pipeline存在 headHandler-workerHandler-tailHandler
+                //向NioEventLoop提交添加handler的异步任务
+                //等NioEventLoop把这个异步任务执行完了之后 pipeline中变成 head-workerHandler-ServerBootstrapAcceptor-tail
+
+                //todo 为什么要ServerSocketChannel中的eventLoop来执行？
                 ch.eventLoop().execute(new Runnable() {
                     @Override
                     public void run() {

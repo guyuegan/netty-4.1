@@ -352,6 +352,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
      * Replaces the current {@link Selector} of this event loop with newly created {@link Selector}s to work
      * around the infamous epoll 100% CPU bug.
      */
+    //Netty——解决Selector 空轮询BUG: https://blog.51cto.com/u_14014612/5766922
     public void rebuildSelector() {
         if (!inEventLoop()) {
             execute(new Runnable() {

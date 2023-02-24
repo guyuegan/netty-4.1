@@ -37,6 +37,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         ctx.write(in);
     }
 
+    //todo 这里的Complete是指读取数据完成 or 读取了完整协议数据帧？
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();

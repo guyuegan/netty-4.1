@@ -59,6 +59,8 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
              *
              *  See <a href="https://github.com/netty/netty/issues/2308">#2308</a>.
              */
+
+            //todo socket是通过SelectorProvider创建
             return provider.openServerSocketChannel();
         } catch (IOException e) {
             throw new ChannelException(
@@ -72,6 +74,10 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
      * Create a new instance
      */
     public NioServerSocketChannel() {
+        //默认调用的是jdk的SelectorProvider.provider()，里面的流程：
+        // loadProviderFromProperty() // 读取系统属性“java.nio.channels.spi.SelectorProvider”，然后反射创建
+        // loadProviderAsService() // classPath里的"META-INF/services/"下读取SelectorProvider.class
+        // DefaultSelectorProvider.create(); //jdk各个操作系统对应版本自带实现
         this(newSocket(DEFAULT_SELECTOR_PROVIDER));
     }
 
@@ -86,6 +92,7 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
      * Create a new instance using the given {@link ServerSocketChannel}.
      */
     public NioServerSocketChannel(ServerSocketChannel channel) {
+        //Server端监听channel，设置关心事件OP_ACCEPT
         super(null, channel, SelectionKey.OP_ACCEPT);
         config = new NioServerSocketChannelConfig(this, javaChannel().socket());
     }

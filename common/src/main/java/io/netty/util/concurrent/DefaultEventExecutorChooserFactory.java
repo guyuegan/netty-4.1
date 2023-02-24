@@ -40,6 +40,7 @@ public final class DefaultEventExecutorChooserFactory implements EventExecutorCh
     }
 
     private static boolean isPowerOfTwo(int val) {
+        // 助记  -x: 取反+1 =》取1
         return (val & -val) == val;
     }
 
@@ -73,6 +74,13 @@ public final class DefaultEventExecutorChooserFactory implements EventExecutorCh
         @Override
         public EventExecutor next() {
             return executors[(int) Math.abs(idx.getAndIncrement() % executors.length)];
+        }
+    }
+
+    public static void main(String[] args) {
+        final AtomicLong idx = new AtomicLong();
+        while (true) {
+            System.out.println((int) Math.abs(idx.getAndIncrement() % 8));
         }
     }
 }
