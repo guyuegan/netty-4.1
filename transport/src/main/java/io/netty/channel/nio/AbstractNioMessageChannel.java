@@ -48,7 +48,8 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
     }
 
     @Override
-    protected void doBeginRead() throws Exception {
+    protected void
+    doBeginRead() throws Exception {
         if (inputShutdown) {
             return;
         }

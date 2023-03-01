@@ -158,7 +158,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
             ServerBootstrapAcceptor handler:
             负责接收客户端连接，连接创建后，对连接初始化
         */
-        p.addLast(new ChannelInitializer<Channel>() {
+        p.addLast(new ChannelInitializer<Channel>() { // todo 为什么要ChannelInitializer
             @Override
             public void initChannel(final Channel ch) {
                 final ChannelPipeline pipeline = ch.pipeline();

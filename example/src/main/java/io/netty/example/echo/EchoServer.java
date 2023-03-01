@@ -44,6 +44,7 @@ public final class EchoServer {
         System.out.println(-3/2);
     }
 
+    // todo 连接建立 -》生成channel -》注册到selector -》读写事件执行 具体流程
     public static void main1(String[] args) throws Exception {
         // Configure SSL.
         final SslContext sslCtx;

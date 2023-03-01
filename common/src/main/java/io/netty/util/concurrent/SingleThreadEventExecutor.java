@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
  */
 public abstract class SingleThreadEventExecutor extends AbstractScheduledEventExecutor implements OrderedEventExecutor {
 
+    // 任务队列长度最小16
     static final int DEFAULT_MAX_PENDING_EXECUTOR_TASKS = Math.max(16,
             SystemPropertyUtil.getInt("io.netty.eventexecutor.maxPendingTasks", Integer.MAX_VALUE));
 
@@ -828,7 +829,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         boolean inEventLoop = inEventLoop();
         // [neo] 任务先放到队列
         addTask(task);
-        if (!inEventLoop) {
+        if (!inEventLoop) { //如果当前线程，不是eventLoop中的线程，启动线程
             // [neo] 启动线程
             startThread();
             if (isShutdown()) {

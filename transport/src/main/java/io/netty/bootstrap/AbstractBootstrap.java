@@ -318,6 +318,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         Channel channel = null;
         try {
             // [neo] 创建channel -> io.netty.channel.socket.nio.NioSocketChannel.newSocket
+            // [neo] 默认id, pipeline初始化：AbstractChannel(io.netty.channel.Channel)
             channel = channelFactory.newChannel();
             // [neo] 初始化channel
             init(channel);

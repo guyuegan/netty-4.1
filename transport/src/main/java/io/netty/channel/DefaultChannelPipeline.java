@@ -968,6 +968,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         return this;
     }
 
+    //bind是出站事件，调用tail的bind
     @Override
     public final ChannelFuture bind(SocketAddress localAddress, ChannelPromise promise) {
         return tail.bind(localAddress, promise);

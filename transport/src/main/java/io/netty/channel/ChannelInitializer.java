@@ -50,6 +50,12 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @param <C>   A sub-type of {@link Channel}
  */
+
+/*
+* 用于在某个Channel注册到EventLoop后，对这个Channel执行一些初始化操作。
+* ChannelInitializer虽然会在一开始会被注册到Channel相关的pipeline里，
+* 但是在初始化完成之后，ChannelInitializer会将自己从pipeline中移除，不会影响后续的操作。
+* */
 @Sharable
 public abstract class ChannelInitializer<C extends Channel> extends ChannelInboundHandlerAdapter {
 
