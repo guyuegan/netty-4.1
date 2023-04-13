@@ -152,6 +152,16 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
         }
     }
 
+    /*
+    NioEventLoop的初始化参数有6个：
+    1: NioEventLoopGroup线程组本身；
+    2: 线程执行器，用于启动线程，在SingleThreadEventExecutor的doStartThread()方法中被调用；
+    3: NIO的Selector选择器的提供者；
+    4: 主要在NioEventLoop的run()方法中用于控制选择循环；
+    5: 为非I/O任务提交被拒绝时的处理Handler；
+    6: 队列工厂，在NioEventLoop中，队列读是单线程操作，而队列写则可能是多线程操
+       使用支持多生产者 、 单消费者的队列比较合适 ， 默认为MpscChunkedArrayQueue
+     */
     @Override
     protected EventLoop newChild(Executor executor, Object... args) throws Exception {
         EventLoopTaskQueueFactory queueFactory = args.length == 4 ? (EventLoopTaskQueueFactory) args[3] : null;

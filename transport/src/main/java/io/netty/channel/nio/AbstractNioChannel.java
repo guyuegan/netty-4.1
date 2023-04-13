@@ -50,7 +50,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
     private static final InternalLogger logger =
             InternalLoggerFactory.getInstance(AbstractNioChannel.class);
 
-    private final SelectableChannel ch;
+    private final SelectableChannel ch; //jdk
     protected final int readInterestOp;
     volatile SelectionKey selectionKey;
     boolean readPending;

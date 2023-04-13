@@ -66,9 +66,10 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
 
         @Override
         public void read() {
-            assert eventLoop().inEventLoop();
+            assert eventLoop().inEventLoop(); //确保是IO线程进行读取操作
             final ChannelConfig config = config();
             final ChannelPipeline pipeline = pipeline();
+            // @see AdaptiveRecvByteBufAllocator
             final RecvByteBufAllocator.Handle allocHandle = unsafe().recvBufAllocHandle();
             allocHandle.reset(config);
 
@@ -77,6 +78,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
             try {
                 try {
                     do {
+                        //返回读取到的消息（连接）数量
                         int localRead = doReadMessages(readBuf);
                         if (localRead == 0) {
                             break;
@@ -87,17 +89,23 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
                         }
 
                         allocHandle.incMessagesRead(localRead);
+                        //没超过16次则继续读
                     } while (continueReading(allocHandle));
                 } catch (Throwable t) {
                     exception = t;
                 }
 
+                //遍历所有的消息（连接），通过流水线传播出去，让对应handler消费
                 int size = readBuf.size();
                 for (int i = 0; i < size; i ++) {
                     readPending = false;
                     pipeline.fireChannelRead(readBuf.get(i));
                 }
+                //完成传播后，清空读取到的消息
+                //如果是异步，list不再引用消息对象【连接】，但是处理handler的业务线程持有消息对象的引用
                 readBuf.clear();
+                //根据当前读取到的字节总数进行自适应计算
+                //todo ServerSocketChannel读的是连接，所以没有字节总数？
                 allocHandle.readComplete();
                 pipeline.fireChannelReadComplete();
 

@@ -278,6 +278,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
     }
 
     private boolean fetchFromScheduledTaskQueue() {
+        //没有任务了，向外返回true，让调用者知道
         if (scheduledTaskQueue == null || scheduledTaskQueue.isEmpty()) {
             return true;
         }
@@ -287,6 +288,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
             if (scheduledTask == null) {
                 return true;
             }
+            //到达执行时间的任务，从定时任务队列丢到普通任务队列，外层从普通队列统一处理
             if (!taskQueue.offer(scheduledTask)) {
                 // No space left in the task queue add it back to the scheduledTaskQueue so we pick it up again.
                 scheduledTaskQueue.add((ScheduledFutureTask<?>) scheduledTask);
@@ -375,7 +377,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         boolean ranAtLeastOne = false;
 
         do {
-            fetchedAll = fetchFromScheduledTaskQueue();
+            fetchedAll = fetchFromScheduledTaskQueue(); //拉取定时队列任务
             if (runAllTasksFrom(taskQueue)) {
                 ranAtLeastOne = true;
             }
@@ -384,7 +386,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         if (ranAtLeastOne) {
             lastExecutionTime = ScheduledFutureTask.nanoTime();
         }
-        afterRunningAllTasks();
+        afterRunningAllTasks(); //执行tailTasks队列中的任务
         return ranAtLeastOne;
     }
 
@@ -423,11 +425,11 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
      */
     protected final boolean runAllTasksFrom(Queue<Runnable> taskQueue) {
         Runnable task = pollTaskFrom(taskQueue);
-        if (task == null) {
+        if (task == null) { //第一次拉取任务就是null，说明队列空，不需要执行任务
             return false;
         }
         for (;;) {
-            safeExecute(task);
+            safeExecute(task); //执行task的run方法
             task = pollTaskFrom(taskQueue);
             if (task == null) {
                 return true;
@@ -475,6 +477,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
 
             runTasks ++;
 
+            // 每执行64个任务检查下是否超过截止时间
             // Check timeout every 64 tasks because nanoTime() is relatively expensive.
             // XXX: Hard-coded value - will make it configurable if it is really a problem.
             if ((runTasks & 0x3F) == 0) {

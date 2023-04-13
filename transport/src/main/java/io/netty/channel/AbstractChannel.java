@@ -44,17 +44,17 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractChannel.class);
 
-    private final Channel parent;
+    private final Channel parent; //netty
     private final ChannelId id;
-    private final Unsafe unsafe;
+    private final Unsafe unsafe; //正在执行IO操作的对象，unsafe不是不安全，是不对外暴露的意思
     private final DefaultChannelPipeline pipeline;
     private final VoidChannelPromise unsafeVoidPromise = new VoidChannelPromise(this, false);
     private final CloseFuture closeFuture = new CloseFuture(this);
 
     private volatile SocketAddress localAddress;
     private volatile SocketAddress remoteAddress;
-    private volatile EventLoop eventLoop;
-    private volatile boolean registered;
+    private volatile EventLoop eventLoop; //连接通道所属eventLoop
+    private volatile boolean registered; //是否已注册
     private boolean closeInitiated;
     private Throwable initialCloseCause;
 
@@ -285,6 +285,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
         return pipeline.deregister(promise);
     }
 
+    //channel#read的实际操作：调用流水线
     @Override
     public Channel read() {
         pipeline.read();
@@ -566,6 +567,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             boolean wasActive = isActive();
             try {
                 // [neo] io.netty.channel.socket.nio.NioServerSocketChannel.doBind
+                // 模板方法，调用子类实现
                 doBind(localAddress);
             } catch (Throwable t) {
                 safeSetFailure(promise, t);

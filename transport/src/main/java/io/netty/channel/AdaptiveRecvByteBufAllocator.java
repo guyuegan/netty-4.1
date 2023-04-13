@@ -112,6 +112,11 @@ public class AdaptiveRecvByteBufAllocator extends DefaultMaxMessagesRecvByteBufA
             // This helps adjust more quickly when large amounts of data is pending and can avoid going back to
             // the selector to check for more data. Going back to the selector can add significant latency for large
             // data transfers.
+            /*
+            如果我们的阅读量和要求的一样多，我们应该检查一下是否需要加大下一个猜测的大小。
+            这有助于在等待大量数据时更快地进行调整，并且可以避免返回选择器检查更多数据。
+            对于大型数据传输，返回选择器可能会增加显著的延迟。
+             */
             if (bytes == attemptedBytesRead()) {
                 record(bytes);
             }
